@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.swift.jira</groupId>
+    <artifactId>bobswift-create-on-transition</artifactId>
+    <version>7.2.0</version>
+
+    <name>Create on Transition</name>
+    <description>
+        ${tag.line}.
+        Supports regex conditioning and variable substitutions.
+        Option to use JQL to find issues for linking or access to fields.
+    </description>
+    <url>https://bobswift.atlassian.net/wiki/display/${jira.key}</url>
+    <packaging>atlassian-plugin</packaging>
+
+    <properties>
+        <vendor.short.name>Bob Swift Add-ons</vendor.short.name>
+        <vendor.name>Bob Swift Atlassian Add-ons</vendor.name>
+        <plugin.name>${vendor.name} - ${project.name}</plugin.name>
+        <workflow.name>${project.name} by Bob Swift</workflow.name>
+        <marketplace.name>${project.name}</marketplace.name>
+        <tag.line>Create issues using powerful workflow functions.</tag.line>
+        <jira.key>CSOT</jira.key>
+
+        <amps.version>6.2.4</amps.version>
+        <atlassian.plugin.key>org.swift.jira.cot</atlassian.plugin.key>
+        <atlassian.plugin.directory>org/swift/jira/cot</atlassian.plugin.directory>
+        <bobswift.library.version>4.1.0</bobswift.library.version>
+        <atlassian.product.version>7.0.0</atlassian.product.version> <!-- only use major versions -->
+        <atlassian.product.min-version>7.0</atlassian.product.min-version>
+        <atlassian.product.max-version>7.9</atlassian.product.max-version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <upm.license.compatibility.version>2.22</upm.license.compatibility.version>
+        <sal.api.version>3.0.0</sal.api.version>
+        <atlassian.templaterenderer.version>1.0.5</atlassian.templaterenderer.version>
+        <ao.version>0.19.16</ao.version>
+        <datacenter.compatibility.version>1.0</datacenter.compatibility.version>
+    </properties>
+
+    <organization>
+        <name>${vendor.name} (an Appfire Company)</name>
+        <url>https://bobswift.atlassian.net/wiki</url>
+    </organization>
+
+    <developers>
+        <developer>
+        <name>Bob Swift</name>
+            <id>bswift</id>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:hg:https://bitbucket.org/bob_swift/jira-create-on-transition-plugin</connection>
+        <developerConnection>scm:hg:https://bitbucket.org/bob_swift/jira-create-on-transition-plugin</developerConnection>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Bob Swift Atlassian Add-ons EULA</name>
+            <distribution>https://bobswift.atlassian.net/wiki/x/WoDXBQ</distribution>
+            <comments>Copyright (c) 2005, 2017 Appfire Technologies, Inc. All rights reserved.</comments>
+            <url>license/LICENSE.txt</url>
+        </license>
+    </licenses>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.swift.jira</groupId>
+            <artifactId>bobswift-library</artifactId>
+            <version>${bobswift.library.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.upm</groupId>
+            <artifactId>data-center-licensing-compatibility</artifactId>
+            <version>${datacenter.compatibility.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- temporary 5.x, 6.x compatibility - see https://developer.atlassian.com/display/JIRADEV/Renamable+Users+in+JIRA+6.0 -->
+        <dependency>
+            <groupId>com.atlassian.usercompatibility</groupId>
+            <artifactId>usercompatibility-jira</artifactId>
+            <version>0.18</version>
+        </dependency>
+
+        <!-- Stable JIRA API -->
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-api</artifactId>
+            <version>${atlassian.product.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- licensing -->
+        <dependency>
+            <groupId>com.atlassian.upm</groupId>
+            <artifactId>licensing-api</artifactId>
+            <version>${upm.license.compatibility.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.upm</groupId>
+            <artifactId>upm-api</artifactId>
+            <version>${upm.license.compatibility.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atlassian.sal</groupId>
+            <artifactId>sal-api</artifactId>
+            <version>${sal.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.templaterenderer</groupId>
+            <artifactId>atlassian-template-renderer-api</artifactId>
+            <version>${atlassian.templaterenderer.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-core</artifactId>
+            <version>1.1.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.activeobjects</groupId>
+            <artifactId>activeobjects-plugin</artifactId>
+            <version>${ao.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>2.5.6</version>
+            <scope>provided</scope>
+        </dependency>
+         <!-- https://mvnrepository.com/artifact/com.atlassian.servicedesk/jira-servicedesk-api -->
+        <dependency>
+            <groupId>com.atlassian.servicedesk</groupId>
+            <artifactId>jira-servicedesk-api</artifactId>
+            <version>3.14.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.vm</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.png</include>
+                    <include>**/*.gif</include>
+                    <include>i18n/**/*</include>
+                    <include>**/*.css</include>
+                    <include>**/*.js</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>atlassian-plugin.xml</include>
+                    <include>application.properties</include>
+                    <include>**/*.vm</include>
+                    <include>i18n/**/*</include>
+                    <include>**/*.css</include>
+                    <include>**/*.js</include>
+                </includes>
+            </resource>
+            <resource>
+                <!-- Add licenses to the jar file -->
+                <directory>.</directory>
+                <includes>
+                    <include>license/*.*</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/itest/resources</directory>
+            </testResource>
+        </testResources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-jira-plugin</artifactId>
+                <version>${amps.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                	<extractDependencies>false</extractDependencies>
+                    <productVersion>${product.version}</productVersion>
+                    <productDataVersion>${product.data.version}</productDataVersion>
+                    <compressResources>false</compressResources>
+                    <enableQuickReload>true</enableQuickReload>
+
+                    <!-- Specify what to bundle in the OBR -->
+
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                      <source>1.8</source>
+                      <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-jira-plugin</artifactId>
+                <version>${amps.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                	<extractDependencies>false</extractDependencies>
+                    <productVersion>${product.version}</productVersion>
+                    <productDataVersion>${product.data.version}</productDataVersion>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <!-- To generate a source jar -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <attach>true</attach>
+                    <includePom>true</includePom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--  ZIP for release, to run use mvn assembly:assembly -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <outputDirectory></outputDirectory>
+                    <descriptors>
+                        <descriptor>src/assembly/jsp.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            com.atlassian.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-jira-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [${amps.version},)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>
+                                                filter-plugin-descriptor
+                                            </goal>
+                                            <goal>
+                                                compress-resources
+                                            </goal>
+                                            <goal>
+                                                copy-bundled-dependencies
+                                            </goal>
+                                            <goal>
+                                                generate-rest-docs
+                                            </goal>
+                                            <goal>
+                                                generate-manifest
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>atlassian-maven2</id>
+            <name>Jira maven2 repository</name>
+            <url>http://repository.atlassian.com/maven2</url>
+        </repository>
+        <repository>
+            <id>atlassian-maven1</id>
+            <name>Jira maven2 repository</name>
+            <url>https://maven.atlassian.com/maven1</url>
+        </repository>
+    </repositories>
+
+</project>
